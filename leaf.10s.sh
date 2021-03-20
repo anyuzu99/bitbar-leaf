@@ -10,22 +10,38 @@
 # <swiftbar.hideAbout>true</swiftbar.hideAbout>
 # <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
 # <swiftbar.hideLastUpdated>true</swiftbar.hideLastUpdated>
-# <swiftbar.hideDisablePlugin>true</swiftbar.hideDisablePlugin>
+# state=$(launchctl print system/bitbar.leaf | grep state)
+
+interface="wi-fi"
+state=$(networksetup -getsocksfirewallproxy $interface | grep No)
 
 toggle() {
-	if [ "$state" = 'Enable' ]
+	if [ -n "$state" ]
 	then
-		state="Disable"
-		icon=":leaf.fill:"
+		networksetup -setsocksfirewallproxystate $interface on
 	else
-		state="Enable"
-		icon=":leaf:"
+		networksetup -setsocksfirewallproxystate $interface off
 	fi
-	exit
 }
 
 config() {
 	open /usr/local/share/leaf/config.conf
+	exit
+}
+
+update() {
+	# leaf
+	curl --tlsv1.2 -LO https://github.com/eycorsican/leaf/releases/latest/download/leaf-x86_64-apple-darwin.gz
+	gzip -df leaf-x86_64-apple-darwin.gz
+	chmod +x leaf-x86_64-apple-darwin
+	mv leaf-x86_64-apple-darwin leaf
+
+	# assets
+	curl --tlsv1.2 -o site.dat https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/dlc.dat
+	curl --tlsv1.2 -o geo.mmdb https://cdn.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/Country.mmdb
+
+	osascript -e 'display notification "Service Updated" with title "Leaf Proxy"'
+	exit
 }
 
 service_install() {
@@ -51,39 +67,31 @@ service_install() {
 	exit
 }
 
-service_update() {
-	# leaf
-	curl --tlsv1.2 -LO https://github.com/eycorsican/leaf/releases/latest/download/leaf-x86_64-apple-darwin.gz
-	gzip -df leaf-x86_64-apple-darwin.gz
-	chmod +x leaf-x86_64-apple-darwin
-	mv leaf-x86_64-apple-darwin leaf
-
-	# assets
-	curl --tlsv1.2 -o site.dat https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/dlc.dat
-	curl --tlsv1.2 -o geo.mmdb https://cdn.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/Country.mmdb
-
-	osascript -e 'display notification "Service Updated" with title "Leaf Proxy"'
-	exit
-}
-
-service_remove() {
+service_uninstall() {
 	rm /usr/local/bin/leaf
 	rm -rf /usr/local/share/leaf
-	osascript -e 'display notification "Service Removed" with title "Leaf Proxy"'
+	osascript -e 'display notification "Service Uninstalld" with title "Leaf Proxy"'
 	exit
 }
 
 # run param
 $1
 
+if [ "$state" ]
+then
+	state="Enable"
+	icon=":leaf:"
+else
+	state="Disable"
+	icon=":leaf.fill:"
+fi
+
 # echo
-state="Enable"
-icon=":leaf:"
 echo "$icon"
 echo "---"
-echo "$state | bash=$0 param1=toggle refresh=true terminal=false"
-echo "Config | bash=$0 param1=config terminal=false"
+echo "$state Leaf | bash=$0 param1=toggle refresh=true terminal=false"
+echo "View Config | bash=$0 param1=config terminal=false"
+echo "Check for Updates... | bash=$0 param1=update terminal=false"
 echo "Service"
 echo "-- Install | bash=$0 param1=service_install"
-echo "-- Update | bash=$0 param1=service_update terminal=false"
-echo "-- Remove | bash=$0 param1=service_remove terminal=false"
+echo "-- Uninstall | bash=$0 param1=service_uninstall terminal=false"
