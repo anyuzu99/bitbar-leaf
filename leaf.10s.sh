@@ -5,7 +5,7 @@
 # <bitbar.author>sayo melu</bitbar.author>
 # <bitbar.author.github>sayomelu</bitbar.author.github>
 # <bitbar.desc>Config Leaf proxy with bitbar.</bitbar.desc>
-# <bitbar.abouturl>http://github.com/sayomelu/bitbar-leaf</bitbar.abouturl>
+# <bitbar.abouturl>https://github.com/sayomelu/bitbar-leaf</bitbar.abouturl>
 #
 # <swiftbar.hideAbout>true</swiftbar.hideAbout>
 # <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
@@ -63,6 +63,7 @@ service_update() {
 	curl --tlsv1.2 -o geo.mmdb https://cdn.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/Country.mmdb
 
 	osascript -e 'display notification "Service Updated" with title "Leaf Proxy"'
+	exit
 }
 
 service_remove() {
@@ -84,5 +85,5 @@ echo "$state | bash=$0 param1=toggle refresh=true terminal=false"
 echo "Config | bash=$0 param1=config terminal=false"
 echo "Service"
 echo "-- Install | bash=$0 param1=service_install"
-echo "-- Update | bash=$0 param1=service_update"
+echo "-- Update | bash=$0 param1=service_update terminal=false"
 echo "-- Remove | bash=$0 param1=service_remove terminal=false"
