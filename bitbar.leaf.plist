@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
+	"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>bitbar.leaf</string>
+	<key>ServiceDescription</key>
+	<string>Config Leaf proxy with bitbar.</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/local/share/leaf/leaf</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+</dict>
+</plist>
