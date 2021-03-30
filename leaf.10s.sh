@@ -16,8 +16,7 @@ interface="wi-fi"
 state=$(networksetup -getsocksfirewallproxy $interface | grep No)
 
 toggle() {
-	if [ -n "$state" ]
-	then
+	if [ -n "$state" ]; then
 		networksetup -setsocksfirewallproxystate $interface on
 	else
 		networksetup -setsocksfirewallproxystate $interface off
@@ -38,7 +37,7 @@ update() {
 
 	# assets
 	curl --tlsv1.2 -o site.dat https://cdn.jsdelivr.net/gh/v2fly/domain-list-community@release/dlc.dat
-	curl --tlsv1.2 -o geo.mmdb https://cdn.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/Country.mmdb
+	curl --tlsv1.2 -o geo.mmdb https://cdn.jsdelivr.net/gh/Hackl0us/GeoIP2-CN@release/Country.mmdb
 
 	osascript -e 'display notification "Service Updated" with title "Leaf Proxy"'
 	exit
@@ -77,8 +76,7 @@ service_uninstall() {
 # run param
 $1
 
-if [ "$state" ]
-then
+if [ "$state" ]; then
 	state="Enable"
 	icon=":leaf:"
 else
