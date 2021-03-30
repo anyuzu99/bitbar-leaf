@@ -24,7 +24,7 @@ toggle() {
 }
 
 config() {
-	open /usr/local/share/leaf/config.conf
+	open /usr/local/share/leaf
 	exit
 }
 
@@ -44,8 +44,8 @@ update() {
 }
 
 service_install() {
-	mkdir /usr/local/share/leaf/
-	cd /usr/local/share/leaf/
+	mkdir /usr/local/share/leaf
+	cd /usr/local/share/leaf
 
 	# leaf
 	curl --tlsv1.2 -LO https://github.com/eycorsican/leaf/releases/latest/download/leaf-x86_64-apple-darwin.gz
