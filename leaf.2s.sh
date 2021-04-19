@@ -1,30 +1,28 @@
 #!/bin/sh
 #
 # <bitbar.title>Leaf Proxy</bitbar.title>
-# <bitbar.version>0.1</bitbar.version>
+# <bitbar.version>v0.2</bitbar.version>
 # <bitbar.author>sayo melu</bitbar.author>
 # <bitbar.author.github>sayomelu</bitbar.author.github>
 # <bitbar.desc>Config Leaf proxy with bitbar.</bitbar.desc>
 # <bitbar.abouturl>https://github.com/sayomelu/bitbar-leaf</bitbar.abouturl>
-#
-# <swiftbar.hideAbout>true</swiftbar.hideAbout>
-# <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
-# <swiftbar.hideLastUpdated>true</swiftbar.hideLastUpdated>
-# state=$(launchctl print system/bitbar.leaf | grep state)
 
-interface="wi-fi"
+interface="wi-fi" # PPPoE, Ethernet Adapter, Wi-Fi, Bluetooth PAN, Thunderbolt Bridge
 state=$(networksetup -getsocksfirewallproxy $interface | grep No)
 
 toggle() {
 	if [ -n "$state" ]; then
 		networksetup -setsocksfirewallproxystate $interface on
+		networksetup -setsocksfirewallproxy $interface 127.0.0.1 1080
+		cd /usr/local/share/leaf/
+		./leaf
 	else
 		networksetup -setsocksfirewallproxystate $interface off
 	fi
 }
 
 config() {
-	open /usr/local/share/leaf
+	open /usr/local/share/leaf/config.conf
 	exit
 }
 
@@ -44,8 +42,8 @@ update() {
 }
 
 service_install() {
-	mkdir /usr/local/share/leaf
-	cd /usr/local/share/leaf
+	mkdir /usr/local/share/leaf/
+	cd /usr/local/share/leaf/
 
 	# leaf
 	curl --tlsv1.2 -LO https://github.com/eycorsican/leaf/releases/latest/download/leaf-x86_64-apple-darwin.gz
@@ -58,16 +56,11 @@ service_install() {
 	curl --tlsv1.2 -o geo.mmdb https://cdn.jsdelivr.net/gh/alecthw/mmdb_china_ip_list@release/Country.mmdb
 	touch config.conf
 
-	# launchctl
-	curl --tlsv1.2 -LO /Library/LaunchDaemons/bitbar.leaf.plist https://cdn.jsdelivr.net/gh/sayomelu/bitbar-leaf/bitbar.leaf.plist
-	launchctl load /Library/LaunchDaemons/bitbar.leaf.plist
-
 	osascript -e 'display notification "Service Installed" with title "Leaf Proxy"'
 	exit
 }
 
 service_uninstall() {
-	rm /usr/local/bin/leaf
 	rm -rf /usr/local/share/leaf
 	osascript -e 'display notification "Service Uninstalld" with title "Leaf Proxy"'
 	exit
@@ -87,9 +80,8 @@ fi
 # echo
 echo "$icon"
 echo "---"
-echo "$state Leaf | bash=$0 param1=toggle refresh=true terminal=false"
+echo "$state Proxy | bash=$0 param1=toggle refresh=true"
 echo "View Config | bash=$0 param1=config terminal=false"
-echo "Check for Updates... | bash=$0 param1=update terminal=false"
 echo "Service"
-echo "-- Install | bash=$0 param1=service_install"
-echo "-- Uninstall | bash=$0 param1=service_uninstall terminal=false"
+echo "-- Install / Update | bash=$0 param1=service_install"
+echo "-- Uninstall | bash=$0 param1=service_uninstall"
